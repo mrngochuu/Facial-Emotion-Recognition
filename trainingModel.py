@@ -2,6 +2,8 @@ import sys
 import os
 import numpy as np
 import pandas as pd
+import tarfile
+import shutil
 
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
@@ -12,6 +14,19 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
 # from tensorflow.keras.utils import np_utils
 from tensorflow.keras import utils
+
+
+#unzip file
+fname = "fer2013.tar.gz"
+
+if fname.endswith("tar.gz"):
+    tar = tarfile.open(fname, "r:gz")
+    tar.extractall()
+    tar.close()
+elif fname.endswith("tar"):
+    tar = tarfile.open(fname, "r:")
+    tar.extractall()
+    tar.close()
 
 df = pd.read_csv('fer2013/fer2013.csv')
 # print("INFO")
@@ -56,7 +71,7 @@ X_test/=np.std(X_test,axis=0)
 num_features = 64
 num_labels = 7
 batch_size = 64
-epochs = 100
+epochs = 30
 width, height = 48, 48
 
 X_train = X_train.reshape(X_train.shape[0], width, height, 1)
@@ -105,3 +120,12 @@ fer_json = model.to_json()
 with open("fer.json", "w") as json_file:
     json_file.write(fer_json)
 model.save_weights("fer.h5")
+
+#remove file
+
+dir_path = 'fer2013'
+
+try:
+    shutil.rmtree(dir_path)
+except OSError as e:
+    print("Error: %s : %s" % (dir_path, e.strerror))
