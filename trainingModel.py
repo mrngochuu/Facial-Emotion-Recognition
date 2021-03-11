@@ -74,7 +74,7 @@ X_test/=np.std(X_test,axis=0)
 num_features = 64
 num_labels = 7
 batch_size = 64
-epochs = 50
+epochs = 100
 width, height = 48, 48
 
 X_train = X_train.reshape(X_train.shape[0], width, height, 1)
