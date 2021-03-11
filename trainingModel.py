@@ -47,6 +47,9 @@ for index, row in df.iterrows():
         elif 'PublicTest' in row['Usage']:
             X_test.append(np.array(val,'float32'))
             test_y.append(row['emotion'])
+        elif 'PrivateTest' in row['Usage']:
+            X_test.append(np.array(val,'float32'))
+            test_y.append(row['emotion'])
     except:
         print("error occurred at index: ", {index}," and row: ", {row})
 
