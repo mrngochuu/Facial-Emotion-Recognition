@@ -71,7 +71,7 @@ X_test/=np.std(X_test,axis=0)
 num_features = 64
 num_labels = 7
 batch_size = 64
-epochs = 30
+epochs = 50
 width, height = 48, 48
 
 X_train = X_train.reshape(X_train.shape[0], width, height, 1)
@@ -83,34 +83,53 @@ test_y = utils.to_categorical(test_y, num_classes=num_labels)
 #designing in cnn
 model = Sequential()
 
-#1st layers
-model.add(Conv2D(num_features, kernel_size = (3,3), activation = 'relu', input_shape=(X_train.shape[1:])))
-model.add(Conv2D(num_features, kernel_size = (3,3), activation = 'relu'))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
-model.add(Dropout(0.5))
+# MODEL - 01
+# #1st layers
+# model.add(Conv2D(num_features, kernel_size = (3,3), activation = 'relu', input_shape=(X_train.shape[1:])))
+# model.add(Conv2D(num_features, kernel_size = (3,3), activation = 'relu'))
+# model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+# model.add(Dropout(0.5))
 
-#2nd convolutional layer
-model.add(Conv2D(num_features, (3,3), activation='relu'))
-model.add(Conv2D(num_features, (3,3), activation = 'relu'))
-model.add(MaxPooling2D(pool_size = (2,2), strides=(2,2)))
-model.add(Dropout(0.5))
+# #2nd convolutional layer
+# model.add(Conv2D(num_features, (3,3), activation='relu'))
+# model.add(Conv2D(num_features, (3,3), activation = 'relu'))
+# model.add(MaxPooling2D(pool_size = (2,2), strides=(2,2)))
+# model.add(Dropout(0.5))
 
-#3rd convolutional layer
-model.add(Conv2D(2*num_features, (3,3), activation='relu'))
-model.add(Conv2D(2*num_features, (3,3), activation='relu'))
-model.add(MaxPooling2D(pool_size = (2,2), strides=(2,2)))
+# #3rd convolutional layer
+# model.add(Conv2D(2*num_features, (3,3), activation='relu'))
+# model.add(Conv2D(2*num_features, (3,3), activation='relu'))
+# model.add(MaxPooling2D(pool_size = (2,2), strides=(2,2)))
+
+# model.add(Flatten())
+
+# model.add(Dense(2*2*2*2*num_features, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(2*2*2*2*num_features, activation='relu'))
+# model.add(Dropout(0.2))
+
+# model.add(Dense(num_labels, activation='softmax'))
+
+# MODEL 02
+model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
+model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
 
 model.add(Flatten())
-
-model.add(Dense(2*2*2*2*num_features, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(2*2*2*2*num_features, activation='relu'))
-model.add(Dropout(0.2))
-
-model.add(Dense(num_labels, activation='softmax'))
+model.add(Dense(1024, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(7, activation='softmax'))
 
 # model.summary()
-model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
+# model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
+model.compile(loss=categorical_crossentropy,optimizer=Adam(lr=0.0001, decay=1e-6),metrics=['accuracy'])
 
 model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_test, test_y), shuffle=True)
 test_loss, test_acc = model.evaluate(X_test, test_y, verbose=2)
