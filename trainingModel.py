@@ -134,7 +134,8 @@ model.add(Dense(7, activation='softmax'))
 # model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
 model.compile(loss=categorical_crossentropy,optimizer=Adam(lr=0.0001, decay=1e-6),metrics=['accuracy'])
 
-model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_test, test_y), shuffle=True)
+history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_test, test_y), shuffle=True)
+hist_df = pd.DataFrame(history.history)
 test_loss, test_acc = model.evaluate(X_test, test_y, verbose=2)
 print('\nTest accuracy: ', test_acc)
 #saving model
@@ -144,10 +145,14 @@ with open("fer.json", "w") as json_file:
 model.save_weights("fer.h5")
 
 #remove file
-
 dir_path = 'fer2013'
 
 try:
     shutil.rmtree(dir_path)
 except OSError as e:
     print("Error: %s : %s" % (dir_path, e.strerror))
+
+# save history file
+hist_json_file = 'history.json' 
+with open(hist_json_file, mode='w') as f:
+    hist_df.to_json(f)
