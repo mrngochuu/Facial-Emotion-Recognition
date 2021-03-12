@@ -136,9 +136,9 @@ model.add(Dense(7, activation='softmax'))
 # model.load_weights()
 model.compile(loss=categorical_crossentropy,optimizer=Adam(lr=0.0001, decay=1e-6),metrics=['accuracy'])
 
-history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_test, test_y), shuffle=True, steps_per_epoch=898)
+history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_test, test_y), shuffle=True)
 hist_df = pd.DataFrame(history.history)
-test_loss, test_acc = model.evaluate(X_test, test_y, verbose=2)
+test_loss, test_acc = model.evaluate((X_train, train_y), (X_test, test_y), verbose=2)
 print('\nTest accuracy: ', test_acc)
 #saving model
 fer_json = model.to_json()
