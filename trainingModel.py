@@ -146,6 +146,16 @@ with open("fer.json", "w") as json_file:
     json_file.write(fer_json)
 model.save_weights("fer.h5")
 
+# save history file
+hist_json_file = 'history.json' 
+with open(hist_json_file, mode='w') as f:
+    hist_df.to_json(f)
+
+# save accuracy
+acc_txt_file = "acc.txt"
+with open(acc_txt_file, mode='w') as f:
+    f.write(str(test_acc))
+
 #remove file
 dir_path = 'fer2013'
 
@@ -154,7 +164,3 @@ try:
 except OSError as e:
     print("Error: %s : %s" % (dir_path, e.strerror))
 
-# save history file
-hist_json_file = 'history.json' 
-with open(hist_json_file, mode='w') as f:
-    hist_df.to_json(f)
