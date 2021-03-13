@@ -74,7 +74,7 @@ X_test/=np.std(X_test,axis=0)
 num_features = 64
 num_labels = 7
 batch_size = 64
-epochs = 100
+epochs = 50
 width, height = 48, 48
 
 X_train = X_train.reshape(X_train.shape[0], width, height, 1)
@@ -134,7 +134,7 @@ model.add(Dense(7, activation='softmax'))
 # model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
 # model.make_model()
 # model.load_weights()
-model.compile(loss=categorical_crossentropy,optimizer=Adam(lr=0.0001, decay=1e-6),metrics=['accuracy'])
+model.compile(loss=categorical_crossentropy,optimizer=Adam(),metrics=['accuracy'])
 
 history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_test, test_y), shuffle=True)
 hist_df = pd.DataFrame(history.history)
