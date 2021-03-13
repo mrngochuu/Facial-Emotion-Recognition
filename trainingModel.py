@@ -138,19 +138,6 @@ model.compile(loss=categorical_crossentropy,optimizer=Adam(lr=0.0001, decay=1e-6
 
 history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_test, test_y), shuffle=True)
 hist_df = pd.DataFrame(history.history)
-test_loss, test_acc = model.evaluate((X_train, train_y), (X_test, test_y), verbose=2)
-# save accuracy
-acc_txt_file = "acc.txt"
-with open(acc_txt_file, mode='w') as f:
-    f.write('(X_train, train_y), (X_test,test_y)\n')
-    f.write(str(test_acc))
-
-test_loss, test_acc = model.evaluate(train_y, test_y, verbose=2)
-# save accuracy
-acc_txt_file = "acc.txt"
-with open(acc_txt_file, mode='w') as f:
-    f.write('\nTrain_y, test_y\n')
-    f.write(str(test_acc))
 
 test_loss, test_acc = model.evaluate(X_test, test_y, verbose=2)
 # save accuracy
