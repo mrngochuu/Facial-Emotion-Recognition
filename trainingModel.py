@@ -146,7 +146,6 @@ test_loss, test_acc = model.evaluate(X_test, test_y, verbose=2)
 # save accuracy
 acc_txt_file = "acc.txt"
 with open(acc_txt_file, mode='w') as f:
-    f.write('\X_test, test_y\n')
     f.write(str(test_acc))
 
 print('\nTest accuracy: ', test_acc)
