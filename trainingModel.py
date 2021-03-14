@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import tarfile
 import shutil
+import matplotlib.pyplot as plt
 
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
@@ -36,7 +37,7 @@ df = pd.read_csv('fer2013/fer2013.csv')
 # print("HEAD")
 # print(df.head())
 
-X_train, train_y, X_test, test_y = [], [], [], []
+X_train, train_y, X_test, test_y, X_val, val_y = [], [], [], [], [], []
 
 for index, row in df.iterrows():
     val = row['pixels'].split(" ")
@@ -45,13 +46,13 @@ for index, row in df.iterrows():
             X_train.append(np.array(val,'float32'))
             train_y.append(row['emotion'])
         elif 'PublicTest' in row['Usage']:
-            # X_test.append(np.array(val,'float32'))
-            # test_y.append(row['emotion'])
-            X_train.append(np.array(val,'float32'))
-            train_y.append(row['emotion'])
-        elif 'PrivateTest' in row['Usage']:
             X_test.append(np.array(val,'float32'))
             test_y.append(row['emotion'])
+            # X_train.append(np.array(val,'float32'))
+            # train_y.append(row['emotion'])
+        elif 'PrivateTest' in row['Usage']:
+            X_val.append(np.array(val,'float32'))
+            val_y.append(row['emotion'])
     except:
         print("error occurred at index: ", {index}," and row: ", {row})
 
@@ -64,6 +65,8 @@ X_train=np.array(X_train,'float32')
 train_y=np.array(train_y,'float32')
 X_test=np.array(X_test,'float32')
 test_y=np.array(test_y,'float32')
+X_val=np.array(X_test,'float32')
+val_y=np.array(test_y,'float32')
 
 # Normalizing data between 0 and 1.
 
@@ -73,12 +76,14 @@ X_train/=np.std(X_train,axis=0)
 X_test-=np.mean(X_test,axis=0)
 X_test/=np.std(X_test,axis=0)
 
+X_val-=np.mean(X_test,axis=0)
+X_val/=np.std(X_test,axis=0)
+
 num_features = 64
 num_labels = 7
 batch_size = 64
-epochs = 50
+epochs = 100
 width, height = 48, 48
-validation_split = 0.2
 
 X_train = X_train.reshape(X_train.shape[0], width, height, 1)
 X_test = X_test.reshape(X_test.shape[0], width, height, 1)
@@ -120,13 +125,13 @@ model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
 model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+model.add(Dropout(0.5))
 
 model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+model.add(Dropout(0.5))
 
 model.add(Flatten())
 model.add(Dense(1024, activation='relu'))
@@ -137,9 +142,13 @@ model.add(Dense(7, activation='softmax'))
 # model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
 # model.make_model()
 # model.load_weights()
+callback = tf.keras.callbacks.EarlyStopping(
+    monitor='val_accuracy', patience=5,
+    mode='auto', restore_best_weights=True
+)
 model.compile(loss=categorical_crossentropy,optimizer=Adam(),metrics=['accuracy'])
 
-history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_split=validation_split, shuffle=True)
+history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, callbacks=[callback], verbose=1, validation_data=(X_val, val_y), shuffle=True)
 hist_df = pd.DataFrame(history.history)
 
 test_loss, test_acc = model.evaluate(X_test, test_y, verbose=2)
@@ -147,8 +156,36 @@ test_loss, test_acc = model.evaluate(X_test, test_y, verbose=2)
 acc_txt_file = "acc.txt"
 with open(acc_txt_file, mode='w') as f:
     f.write(str(test_acc))
-
 print('\nTest accuracy: ', test_acc)
+
+#Create a plot of accuracy and loss over time
+history_dict = history.history
+history_dict.keys()
+acc = history_dict['binary_accuracy']
+val_acc = history_dict['val_binary_accuracy']
+loss = history_dict['loss']
+val_loss = history_dict['val_loss']
+
+# "bo" is for "blue dot"
+plt.plot(epochs, loss, 'bo', label='Training loss')
+# b is for "solid blue line"
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Training and validation loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+
+plt.savefig('trainingLoss.png')
+
+plt.plot(epochs, acc, 'bo', label='Training acc')
+plt.plot(epochs, val_acc, 'b', label='Validation acc')
+plt.title('Training and validation accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend(loc='lower right')
+
+plt.savefig('traningAcc.png')
+
 #saving model
 fer_json = model.to_json()
 with open("fer.json", "w") as json_file:
