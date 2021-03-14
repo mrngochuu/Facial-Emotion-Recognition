@@ -45,8 +45,10 @@ for index, row in df.iterrows():
             X_train.append(np.array(val,'float32'))
             train_y.append(row['emotion'])
         elif 'PublicTest' in row['Usage']:
-            X_test.append(np.array(val,'float32'))
-            test_y.append(row['emotion'])
+            # X_test.append(np.array(val,'float32'))
+            # test_y.append(row['emotion'])
+            X_train.append(np.array(val,'float32'))
+            train_y.append(row['emotion'])
         elif 'PrivateTest' in row['Usage']:
             X_test.append(np.array(val,'float32'))
             test_y.append(row['emotion'])
@@ -74,8 +76,9 @@ X_test/=np.std(X_test,axis=0)
 num_features = 64
 num_labels = 7
 batch_size = 64
-epochs = 10
+epochs = 50
 width, height = 48, 48
+validation_split = 0.2
 
 X_train = X_train.reshape(X_train.shape[0], width, height, 1)
 X_test = X_test.reshape(X_test.shape[0], width, height, 1)
@@ -136,7 +139,7 @@ model.add(Dense(7, activation='softmax'))
 # model.load_weights()
 model.compile(loss=categorical_crossentropy,optimizer=Adam(),metrics=['accuracy'])
 
-history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_test, test_y), shuffle=True)
+history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_split=validation_split, shuffle=True)
 hist_df = pd.DataFrame(history.history)
 
 test_loss, test_acc = model.evaluate(X_test, test_y, verbose=2)
