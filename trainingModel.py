@@ -46,13 +46,13 @@ for index, row in df.iterrows():
             X_train.append(np.array(val,'float32'))
             train_y.append(row['emotion'])
         elif 'PublicTest' in row['Usage']:
-            X_test.append(np.array(val,'float32'))
-            test_y.append(row['emotion'])
+            X_val.append(np.array(val,'float32'))
+            val_y.append(row['emotion'])
             # X_train.append(np.array(val,'float32'))
             # train_y.append(row['emotion'])
         elif 'PrivateTest' in row['Usage']:
-            X_val.append(np.array(val,'float32'))
-            val_y.append(row['emotion'])
+            X_test.append(np.array(val,'float32'))
+            test_y.append(row['emotion'])
     except:
         print("error occurred at index: ", {index}," and row: ", {row})
 
@@ -65,8 +65,8 @@ X_train=np.array(X_train,'float32')
 train_y=np.array(train_y,'float32')
 X_test=np.array(X_test,'float32')
 test_y=np.array(test_y,'float32')
-X_val=np.array(X_test,'float32')
-val_y=np.array(test_y,'float32')
+X_val=np.array(X_val,'float32')
+val_y=np.array(val_y,'float32')
 
 # Normalizing data between 0 and 1.
 
@@ -76,8 +76,8 @@ X_train/=np.std(X_train,axis=0)
 X_test-=np.mean(X_test,axis=0)
 X_test/=np.std(X_test,axis=0)
 
-X_val-=np.mean(X_test,axis=0)
-X_val/=np.std(X_test,axis=0)
+X_val-=np.mean(X_val,axis=0)
+X_val/=np.std(X_val,axis=0)
 
 num_features = 64
 num_labels = 7
@@ -87,9 +87,11 @@ width, height = 48, 48
 
 X_train = X_train.reshape(X_train.shape[0], width, height, 1)
 X_test = X_test.reshape(X_test.shape[0], width, height, 1)
+X_val = X_val.reshape(X_val.shape[0], width, height, 1)
 
 train_y = utils.to_categorical(train_y, num_classes=num_labels)
 test_y = utils.to_categorical(test_y, num_classes=num_labels)
+val_y = utils.to_categorical(val_y, num_classes=num_labels)
 
 #designing in cnn
 model = Sequential()
@@ -161,8 +163,8 @@ print('\nTest accuracy: ', test_acc)
 #Create a plot of accuracy and loss over time
 history_dict = history.history
 history_dict.keys()
-acc = history_dict['binary_accuracy']
-val_acc = history_dict['val_binary_accuracy']
+acc = history_dict['accuracy']
+val_acc = history_dict['val_accuracy']
 loss = history_dict['loss']
 val_loss = history_dict['val_loss']
 
