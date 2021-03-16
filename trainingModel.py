@@ -82,7 +82,7 @@ X_val/=np.std(X_val,axis=0)
 num_features = 64
 num_labels = 7
 batch_size = 64
-epochs = 100
+epochs = 50
 width, height = 48, 48
 
 X_train = X_train.reshape(X_train.shape[0], width, height, 1)
@@ -144,13 +144,13 @@ model.add(Dense(7, activation='softmax'))
 # model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
 # model.make_model()
 # model.load_weights()
-callback = tf.keras.callbacks.EarlyStopping(
-    monitor='val_loss', min_delta=0, patience=5,
-    mode='auto', restore_best_weights=True
-)
+# callback = tf.keras.callbacks.EarlyStopping(
+#     monitor='val_loss', min_delta=0, patience=5,
+#     mode='auto', restore_best_weights=True
+# )
 model.compile(loss=categorical_crossentropy,optimizer=Adam(),metrics=['accuracy'])
 
-history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, callbacks=[callback], verbose=1, validation_data=(X_val, val_y), shuffle=True)
+history = model.fit(X_train, train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_val, val_y), shuffle=True)
 hist_df = pd.DataFrame(history.history)
 
 test_loss, test_acc = model.evaluate(X_test, test_y, verbose=2)
