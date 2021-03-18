@@ -70,14 +70,25 @@ val_y=np.array(val_y,'float32')
 
 # Normalizing data between 0 and 1.
 
-X_train-=np.mean(X_train,axis=0)
-X_train/=np.std(X_train,axis=0)
+# Mean normalizing
+# X_train-=np.mean(X_train,axis=0)
+# X_train/=np.std(X_train,axis=0)
 
-X_test-=np.mean(X_test,axis=0)
-X_test/=np.std(X_test,axis=0)
+# X_test-=np.mean(X_test,axis=0)
+# X_test/=np.std(X_test,axis=0)
 
-X_val-=np.mean(X_val,axis=0)
-X_val/=np.std(X_val,axis=0)
+# X_val-=np.mean(X_val,axis=0)
+# X_val/=np.std(X_val,axis=0)
+
+# Min-Max normalizing
+X_train-=np.min(X_train, axis=0)
+X_train/=(np.max(X_train, axis=0) - np.min(X_train, axis=0))
+
+X_test-=np.min(X_test, axis=0)
+X_test/=(np.max(X_test, axis=0) - np.min(X_test, axis=0))
+
+X_val-=np.min(X_val, axis=0)
+X_val/=(np.max(X_val, axis=0) - np.min(X_val, axis=0))
 
 num_features = 64
 num_labels = 7
