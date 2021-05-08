@@ -17,6 +17,7 @@ face_haar_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_f
 
 
 cap=cv2.VideoCapture(0)
+result = [0, 0, 0, 0, 0, 0, 0]
 
 while True:
     ret,test_img=cap.read()# captures frame and returns boolean value and captured image
@@ -39,6 +40,8 @@ while True:
 
         #find max indexed array
         max_index = np.argmax(predictions[0])
+        if max_index >= 0:
+            result[max_index] += 1
 
         emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
         predicted_emotion = emotions[max_index]
@@ -47,6 +50,7 @@ while True:
 
     resized_img = cv2.resize(test_img, (1000, 700))
     cv2.imshow('Facial emotion analysis ',resized_img)
+    print(*result, sep = ", ")
 
 
 
