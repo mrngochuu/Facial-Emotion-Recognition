@@ -1,11 +1,24 @@
-# realtime_emotion_detection
+# Facial emotion recognition
 
-INSTAL
+### INSTAL requirement
  - numpy
  - pandas
  - tensorflow
  - keras
 
-RUN
- - Training model: python trainingModel.py
- - Camera test: python videoTester.py
+### Dataset
+ - ##### Fer2013
+ ````
+ https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
+ ````
+
+
+### RUN
+ - ##### For training model
+ ````
+ python trainingModel.py
+ ````
+ - ##### For detecting video
+ ````
+ python videoOffline.py --video <path input video> --save <path output detected video> --fps <fps to detect>
+ ````
