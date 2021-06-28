@@ -12,22 +12,22 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", required=True, help="path to input video file")
 ap.add_argument("-s", "--save", required=True, help="path to save detected video")
 ap.add_argument("--fps", type=int, default=0, help="fps to detect video")
+ap.add_argument("--model", required=True, help="loading model to detect video")
+ap.add_argument("--weight", required=True, help="weight to detect video")
 args = vars(ap.parse_args())
 
 #load model
-model = model_from_json(open("fer.json","r").read())
+model = model_from_json(open(args["model"],"r").read())
 #load weights
-model.load_weights('fer.h5')
+model.load_weights(args["weight"])
 
 face_haar_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
-
 
 # input video
 cap = cv2.VideoCapture(args["video"])
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-fpsCap = cap.get(cv2.CAP_PROP_FPS)
+fpsCap = int(cap.get(cv2.CAP_PROP_FPS))
 
 # arg fps
 fpsReduce = args["fps"]
@@ -100,22 +100,11 @@ while cap.isOpened():
         resized_img = cv2.resize(test_img, (width, height))
         cv2.imshow('Facial emotion analysis ', resized_img)
         out.write(resized_img)
-    else:
-        print('Does not detect this frame ' + str(currentFrame))
     
-    print('--------------------------------')
-    print('Frame number: ' + str(currentFrame))
-    print('Total frame: ' + str(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
-    print('FPS : ' + str(cap.get(cv2.CAP_PROP_FPS)))
-    print(str(i) + ': ' + textEmotion)
-    print(*result, sep = ", ")
-    print('--------------------------------')
-    i += 1
-    print('Total detected frames: ' + str(count))
-
     if(currentFrame == cap.get(cv2.CAP_PROP_FRAME_COUNT)):
         break
 
+print(*result, sep = ",")
 cap.release()
 out.release()
 cv2.destroyAllWindows
