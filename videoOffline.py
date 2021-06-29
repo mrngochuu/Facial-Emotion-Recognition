@@ -39,18 +39,17 @@ if fpsReduce <= 0 or fpsReduce >= fpsCap:
     fpsFlg = False
 
 # output video
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
+fourcc = cv2.VideoWriter_fourcc(*'avc1')
 out = cv2.VideoWriter(args["save"], fourcc, fpsReduce, (width,height))
 
+
 # used to record emotions
-i = 0
 result = [0, 0, 0, 0, 0, 0, 0]
 
 # flg to get detect frame
 flg = True
 
 # count total detect frame
-count = 0
 
 while cap.isOpened():
     # captures frame and returns boolean value and captured image
@@ -67,7 +66,6 @@ while cap.isOpened():
             flg = True
 
     if (fpsFlg == False) or (currentFrame >= firstFrame and currentFrame <= firstFrame + fpsReduce):
-        count = count + 1
         flg = False
         
         textEmotion = ''
@@ -108,3 +106,4 @@ print(*result, sep = ",")
 cap.release()
 out.release()
 cv2.destroyAllWindows
+
