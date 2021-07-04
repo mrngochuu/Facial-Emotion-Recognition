@@ -39,8 +39,8 @@ if fpsReduce <= 0 or fpsReduce >= fpsCap:
     fpsFlg = False
 
 # output video
-fourcc = cv2.VideoWriter_fourcc(*'avc1')
-out = cv2.VideoWriter(args["save"], fourcc, fpsReduce, (width,height))
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+out = cv2.VideoWriter(args["save"], fourcc, fpsCap, (width,height))
 
 
 # used to record emotions
@@ -49,14 +49,11 @@ result = [0, 0, 0, 0, 0, 0, 0]
 # flg to get detect frame
 flg = True
 
-# count total detect frame
-
 while cap.isOpened():
     # captures frame and returns boolean value and captured image
     ret,test_img=cap.read()
     # get frame number
     currentFrame = cap.get(cv2.CAP_PROP_POS_FRAMES)
-
     if fpsFlg:
         if flg:
             firstFrame = currentFrame
@@ -67,8 +64,6 @@ while cap.isOpened():
 
     if (fpsFlg == False) or (currentFrame >= firstFrame and currentFrame <= firstFrame + fpsReduce):
         flg = False
-        
-        textEmotion = ''
         if not ret:
             continue
         gray_img= cv2.cvtColor(test_img, cv2.COLOR_BGR2GRAY)
@@ -93,8 +88,7 @@ while cap.isOpened():
             emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
             predicted_emotion = emotions[max_index]
 
-            cv2.putText(test_img, predicted_emotion, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
-            textEmotion = predicted_emotion    
+            cv2.putText(test_img, predicted_emotion, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)   
         resized_img = cv2.resize(test_img, (width, height))
         cv2.imshow('Facial emotion analysis ', resized_img)
         out.write(resized_img)
