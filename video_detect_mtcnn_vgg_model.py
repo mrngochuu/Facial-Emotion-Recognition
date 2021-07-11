@@ -18,16 +18,15 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", required=True, help="path to input video file")
 ap.add_argument("-s", "--save", required=True, help="path to save detected video")
 ap.add_argument("--fps", type=int, default=0, help="fps to detect video")
-# ap.add_argument("--model", required=True, help="loading model to detect video")
-# ap.add_argument("--weight", required=True, help="weight to detect video")
+ap.add_argument("--weight", required=True, help="weight to detect video")
 args = vars(ap.parse_args())
 
-model = load_model("/Users/mrngochuu/Desktop/Result_training_model/emotion_prediction_vggface_5.h5")
+model = load_model(args["weight"])
 
 # use CPU
 # os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
 
-# function
+# etract face
 def extract_face(face,image,required_size=(224,224)):
   x1, y1, width, height = face['box']
   x2, y2 = x1 + width, y1 + height
@@ -46,6 +45,7 @@ def extract_face(face,image,required_size=(224,224)):
   face_array = asarray(face_image)
   return face_array
 
+# change gray img
 def rgb_gray(face):
   img = color.rgb2gray(face)
   return img
@@ -84,10 +84,11 @@ flg = True
 emotion_dict=('Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise')
 
 while cap.isOpened():
-  ret,test_img=cap.read()# captures frame and returns boolean value and captured image
+  # captures frame and returns boolean value and captured image
+  ret,test_img=cap.read()
   if not ret:
       continue
-
+  # check frames that are detected
   currentFrame = cap.get(cv2.CAP_PROP_POS_FRAMES)
   if fpsFlg:
       if flg:
@@ -98,11 +99,13 @@ while cap.isOpened():
           flg = True
   if (fpsFlg == False) or (currentFrame >= firstFrame and currentFrame <= firstFrame + fpsReduce):
     flg = False
+    # mtcnn detect face in img
     faces = detector.detect_faces(test_img)
     fig_size = plt.rcParams["figure.figsize"]
     fig_size[0] = 12
     fig_size[1] = 12
     for face in faces: 
+      # only using face image with 95% confidence and detect
       if face['confidence'] > 0.95:
         x, y, w, h = face['box']
         #cropped face
@@ -121,7 +124,6 @@ while cap.isOpened():
           # compute result
           if (predicted_class >= 0):
             result[predicted_class] += 1
-            print(*result, sep = ",")
 
           # get label
           predicted_label = emotion_dict[predicted_class]
@@ -131,9 +133,8 @@ while cap.isOpened():
           cv2.rectangle(test_img,(x,y),(x+w,y+h),(255, 0, 0),thickness=4)                  
           cv2.putText(test_img, label, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
     
-    # show img and save video
+    # save video
     resized_img = cv2.resize(test_img, (width, height))
-    cv2.imshow('Facial emotion analysis ',resized_img)
     out.write(resized_img)
 
   if(currentFrame == cap.get(cv2.CAP_PROP_FRAME_COUNT)):

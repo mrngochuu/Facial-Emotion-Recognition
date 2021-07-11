@@ -1,6 +1,6 @@
 # Facial emotion recognition
 
-## INSTAL requirement
+## INSTALL requirement
  - numpy
  - pandas
  - tensorflow
@@ -9,13 +9,14 @@
  - mtcnn
  - keras_vggface
  - keras_applications
-
+&nbsp;
+&nbsp;
 ## Dataset
  - #### Fer2013
  ````
  https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
  ````
-
+&nbsp;
 ## RUN
  ### For training custom model
  - #### Custom model
@@ -25,7 +26,8 @@
  
  - #### VGGFace model
  Read more in Emotion_tranfer_learning_VGG.ipynb
- 
+ &nbsp;
+ &nbsp;
  ### For practical application
  - #### Video with custom model
  ````
@@ -41,7 +43,7 @@
  ````
  python video_detect_mtcnn_vgg_model.py --video <path input video> --save <path output detected video> --fps <fps to detect> -- weight <path weight>
  ````
-
+&nbsp;
 ## Performance evaluation of the model
  ### Custom model - 63% accuracy
  ![alt text](training_custom_model.png?raw=true)
