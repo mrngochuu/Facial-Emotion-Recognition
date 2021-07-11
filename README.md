@@ -43,10 +43,9 @@
  ````
 
 ## Performance evaluation of the model
- ### Custom model
- ![alt text](training_custom_model_acc.png?raw=true)
- ![alt text](training_custom_model_loss.png?raw=true)
- ### VGG model
+ ### Custom model - 63% accuracy
+ ![alt text](training_custom_model.png?raw=true)
+ ### VGG model - 85% accuracy (best weight in 32nd epoch)
  ![alt text](training_vgg_model.png?raw=true)
 
  
