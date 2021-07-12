@@ -1,17 +1,14 @@
 import os
 import cv2
+import numpy as np
 import tensorflow as tf
 import mtcnn
 import argparse
 from keras.models import load_model
 from matplotlib.patches import Rectangle
 from matplotlib import pyplot as plt
-from PIL import Image
 from numpy import asarray
-import numpy as np
 from skimage import color
-
-from keras.models import load_model
 
 
 ap = argparse.ArgumentParser()
@@ -66,8 +63,8 @@ fpsReduce = args["fps"]
 # flg to check apply fps
 fpsFlg = True
 if fpsReduce <= 0 or fpsReduce >= fpsCap:
-    fpsReduce = fpsCap
-    fpsFlg = False
+  fpsReduce = fpsCap
+  fpsFlg = False
 
 # output video
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -110,28 +107,27 @@ while cap.isOpened():
         x, y, w, h = face['box']
         #cropped face
         cropped_face = extract_face(face,test_img)
-        if (cropped_face is not None):
-          # preprocessing img
-          image = rgb_gray(cropped_face)
-          image = color.gray2rgb(image)
-          image = image.reshape((1, 224, 224, 3))
+        # preprocessing img
+        image = rgb_gray(cropped_face)
+        image = color.gray2rgb(image)
+        image = image.reshape((1, 224, 224, 3))
 
-          # predict emotion
-          predicted = model.predict(image)
-          predicted_class = np.argmax(predicted)
-          predicted_percent = predicted[0][predicted_class]
+        # predict emotion
+        predicted = model.predict(image)
+        predicted_class = np.argmax(predicted)
+        predicted_percent = predicted[0][predicted_class]
 
-          # compute result
-          if (predicted_class >= 0):
-            result[predicted_class] += 1
+        # compute result
+        if (predicted_class >= 0):
+          result[predicted_class] += 1
 
-          # get label
-          predicted_label = emotion_dict[predicted_class]
-          label = predicted_label + ' ' + str(round(predicted_percent*100)) + '%'
-          
-          # write emotion text on frame
-          cv2.rectangle(test_img,(x,y),(x+w,y+h),(255, 0, 0),thickness=4)                  
-          cv2.putText(test_img, label, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
+        # get label
+        predicted_label = emotion_dict[predicted_class]
+        label = predicted_label + ' ' + str(round(predicted_percent*100)) + '%'
+        
+        # write emotion text on frame
+        cv2.rectangle(test_img,(x,y),(x+w,y+h),(255, 0, 0),thickness=4)                  
+        cv2.putText(test_img, label, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
     
     # save video
     resized_img = cv2.resize(test_img, (width, height))
