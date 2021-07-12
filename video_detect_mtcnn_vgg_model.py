@@ -7,6 +7,7 @@ import argparse
 from keras.models import load_model
 from matplotlib.patches import Rectangle
 from matplotlib import pyplot as plt
+from PIL import Image
 from numpy import asarray
 from skimage import color
 
