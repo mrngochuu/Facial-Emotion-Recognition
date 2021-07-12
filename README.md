@@ -12,11 +12,11 @@
 &nbsp;
 &nbsp;
 ## Dataset
- - #### Fer2013 - .csv (using custom model)
+ - #### Fer2013 - .csv (using for custom model)
  ````
  https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
  ````
- - #### Fer2013 - .png (using vgg model)
+ - #### Fer2013 - .png (using for vgg model)
  ````
  https://www.kaggle.com/msambare/fer2013
  ````
