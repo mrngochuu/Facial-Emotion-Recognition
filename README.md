@@ -45,7 +45,7 @@
  
  - #### Video with VGG model
  ````
- python video_detect_mtcnn_vgg_model.py --video <path input video> --save <path output detected video> --fps <fps to detect> -- weight <path weight>
+ python video_detect_mtcnn_vgg_model.py --video <path input video> --save <path output detected video> --fps <fps to detect> -- weight <path weight> -c <confidence of emotions: 0 - 1>
  ````
 &nbsp;
 ## Performance evaluation of the model

@@ -15,8 +15,9 @@ from skimage import color
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", required=True, help="path to input video file")
 ap.add_argument("-s", "--save", required=True, help="path to save detected video")
-ap.add_argument("--fps", type=int, default=0, help="fps to detect video")
-ap.add_argument("--weight", required=True, help="weight to detect video")
+ap.add_argument("-f", "--fps", type=int, default=10, help="fps to detect video")
+ap.add_argument("-w", "--weight", required=True, help="weight to detect video")
+ap.add_argument("-c", "--confidence", required=True, default=0.0, help="Confidence of emotions on videos")
 args = vars(ap.parse_args())
 
 model = load_model(args["weight"])
@@ -63,13 +64,18 @@ fpsReduce = args["fps"]
 
 # flg to check apply fps
 fpsFlg = True
+weight_fps = 1
 if fpsReduce <= 0 or fpsReduce >= fpsCap:
   fpsReduce = fpsCap
   fpsFlg = False
+else:  
+  # weight of fps reduce and fps video
+  weight_fps = round(fpsCap / fpsReduce)
+
 
 # output video
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter(args["save"], fourcc, fpsReduce, (width,height))
+out = cv2.VideoWriter(args["save"], fourcc, fpsCap, (width,height))
 
 
 # used to record emotions
@@ -88,6 +94,7 @@ while cap.isOpened():
       continue
   # check frames that are detected
   currentFrame = cap.get(cv2.CAP_PROP_POS_FRAMES)
+  # condition FPS
   if fpsFlg:
       if flg:
           firstFrame = currentFrame
@@ -95,6 +102,7 @@ while cap.isOpened():
 
       if currentFrame == lastFrame:
           flg = True
+  # detecting ... 
   if (fpsFlg == False) or (currentFrame >= firstFrame and currentFrame <= firstFrame + fpsReduce):
     flg = False
     # mtcnn detect face in img
@@ -117,14 +125,17 @@ while cap.isOpened():
         predicted = model.predict(image)
         predicted_class = np.argmax(predicted)
         predicted_percent = predicted[0][predicted_class]
-
-        # compute result
-        if (predicted_class >= 0):
-          result[predicted_class] += 1
-
-        # get label
-        predicted_label = emotion_dict[predicted_class]
-        label = predicted_label + ' ' + str(round(predicted_percent*100)) + '%'
+        
+        # predict and save result with confidence args
+        if (predicted_percent >= float(args['confidence'])):
+          # compute result
+          if (predicted_class >= 0):
+            result[predicted_class] += 1
+          
+          predicted_label = emotion_dict[predicted_class]
+          label = predicted_label + ' ' + str(round(predicted_percent*100)) + '%'
+        else:
+          label = 'Unknown' 
         
         # write emotion text on frame
         cv2.rectangle(test_img,(x,y),(x+w,y+h),(255, 0, 0),thickness=4)                  
@@ -132,7 +143,8 @@ while cap.isOpened():
     
     # save video
     resized_img = cv2.resize(test_img, (width, height))
-    out.write(resized_img)
+    for i in range(1, weight_fps + 1):
+      out.write(resized_img)
 
   if(currentFrame == cap.get(cv2.CAP_PROP_FRAME_COUNT)):
         break
