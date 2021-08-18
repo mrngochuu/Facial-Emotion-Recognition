@@ -103,7 +103,7 @@ while cap.isOpened():
       if currentFrame == lastFrame:
           flg = True
   # detecting ... 
-  if (fpsFlg == False) or (currentFrame >= firstFrame and currentFrame <= firstFrame + fpsReduce):
+  if (fpsFlg == False) or (currentFrame >= firstFrame and currentFrame < firstFrame + fpsReduce):
     flg = False
     # mtcnn detect face in img
     faces = detector.detect_faces(test_img)
